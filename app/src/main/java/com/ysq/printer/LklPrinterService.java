@@ -28,12 +28,12 @@ public class LklPrinterService extends IntentService {
      * 意图类型，0：启动打印机，1：打印内容，2：开始打印，3：断开打印机
      */
     public static final String INTENT_TYPE = "INTENT_TYPE";
-    //LKL AIDL ACTION值
-    private static final String ACTION_LKL_SERVICE = "lkl_cloudpos_mid_service";
 
-
-    private CountDownLatch mCountDownLatch = new CountDownLatch(1);
+    //用来控制线程，将异步转成同步
+    private CountDownLatch mCountDownLatch;
+    //拉卡拉打印条目
     private List<PrintItemObj> mPrintItemObjs = new ArrayList<>();
+    //拉卡拉打印对象
     private AidlPrinter mPrinter;
 
     /**
@@ -87,9 +87,10 @@ public class LklPrinterService extends IntentService {
      */
     private void init() throws InterruptedException {
         Intent intent = new Intent();
-        intent.setAction(ACTION_LKL_SERVICE);
+        intent.setAction("lkl_cloudpos_mid_service");
         bindService(getExplicitIntent(getApplicationContext(), intent)
                 , mServiceConnection, Context.BIND_AUTO_CREATE);
+        mCountDownLatch = new CountDownLatch(1);
         mCountDownLatch.await();
     }
 

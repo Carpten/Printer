@@ -23,6 +23,7 @@ public class PrintManage {
         mPrintable.printTextCenter("");
         mPrintable.printTextCenter("");
         mPrintable.printTextCenter("");
+        mPrintable.printTextCenter("");
         mPrintable.startPrint();
         mPrintable.close();
     }

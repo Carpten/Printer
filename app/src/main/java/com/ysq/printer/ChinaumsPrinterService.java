@@ -2,8 +2,8 @@ package com.ysq.printer;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.util.Log;
 
-import com.ums.upos.sdk.exception.SdkException;
 import com.ums.upos.sdk.printer.FontConfig;
 import com.ums.upos.sdk.printer.OnPrintResultListener;
 import com.ums.upos.sdk.printer.PrinterManager;
@@ -23,9 +23,9 @@ public class ChinaumsPrinterService extends IntentService {
      */
     public static final String INTENT_TYPE = "INTENT_TYPE";
 
-
-    private CountDownLatch mCountDownLatch = new CountDownLatch(1);
-
+    //用来控制线程，将异步转成同步
+    private CountDownLatch mCountDownLatch;
+    //银商打印对象
     private PrinterManager mPrinter;
 
 
@@ -38,18 +38,24 @@ public class ChinaumsPrinterService extends IntentService {
         try {
             int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
             if (intExtra == 0) {
+                Log.i("test", "0");
                 init();
             } else if (intExtra == 1 && mPrinter != null) {
+                Log.i("test", "1");
                 mPrinter.setPrnText(intent.getStringExtra(EXTRA_TEXT), new FontConfig());
             } else if (intExtra == 2) {
+                Log.i("test", "2");
                 mPrinter.startPrint(new OnPrintResultListener() {
                     @Override
                     public void onPrintResult(int i) {
                         mCountDownLatch.countDown();
+                        Log.i("test", "22");
                     }
                 });
+                mCountDownLatch = new CountDownLatch(1);
                 mCountDownLatch.await();
             } else if (intExtra == 3) {
+                Log.i("test", "3");
                 close();
             }
         } catch (Exception ignored) {
@@ -68,20 +74,22 @@ public class ChinaumsPrinterService extends IntentService {
                             try {
                                 mPrinter = new PrinterManager();
                                 mPrinter.initPrinter();
+                                Log.i("test", "ok init");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            mCountDownLatch.countDown();
                         }
+                        mCountDownLatch.countDown();
                     }
                 });
+        mCountDownLatch = new CountDownLatch(1);
         mCountDownLatch.await();
     }
 
     /**
      * 释放打印机
      */
-    private void close() throws SdkException {
+    private void close() throws Exception {
         BaseSystemManager.getInstance().deviceServiceLogout();
     }
 }
