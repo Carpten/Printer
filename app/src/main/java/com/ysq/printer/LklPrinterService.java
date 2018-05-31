@@ -9,11 +9,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.lkl.cloudpos.aidl.AidlDeviceService;
 import com.lkl.cloudpos.aidl.printer.AidlPrinter;
-import com.lkl.cloudpos.aidl.printer.AidlPrinterListener;
 import com.lkl.cloudpos.aidl.printer.PrintItemObj;
 
 import java.util.ArrayList;
@@ -68,45 +66,31 @@ public class LklPrinterService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
-        if (intExtra == 0) {
-            init();
-        } else if (intExtra == 1 && mPrinter != null) {
-            mPrintItemObjs.add(new PrintItemObj(intent.getStringExtra(EXTRA_TEXT), 20
-                    , true, PrintItemObj.ALIGN.CENTER));
-        } else if (intExtra == 2) {
-            try {
-                mPrinter.printText(mPrintItemObjs, new AidlPrinterListener.Stub() {
-                    @Override
-                    public void onError(int i) {
-                    }
-
-                    @Override
-                    public void onPrintFinish() {
-                        Log.i("test", Thread.currentThread().getName());
-                    }
-                });
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        try {
+            int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
+            if (intExtra == 0) {
+                init();
+            } else if (intExtra == 1 && mPrinter != null) {
+                mPrintItemObjs.add(new PrintItemObj(intent.getStringExtra(EXTRA_TEXT), 20
+                        , true, PrintItemObj.ALIGN.CENTER));
+            } else if (intExtra == 2) {
+                mPrinter.printText(mPrintItemObjs, null);
+            } else if (intExtra == 3) {
+                close();
             }
-        } else if (intExtra == 3) {
-            close();
+        } catch (Exception ignored) {
         }
     }
 
     /**
      * 绑定服务
      */
-    private void init() {
+    private void init() throws InterruptedException {
         Intent intent = new Intent();
         intent.setAction(ACTION_LKL_SERVICE);
         bindService(getExplicitIntent(getApplicationContext(), intent)
                 , mServiceConnection, Context.BIND_AUTO_CREATE);
-        try {
-            mCountDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        mCountDownLatch.await();
     }
 
     /**

@@ -1,11 +1,7 @@
 package com.ysq.printer;
 
 import android.app.IntentService;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 
 import com.ums.upos.sdk.exception.SdkException;
 import com.ums.upos.sdk.printer.FontConfig;
@@ -14,7 +10,6 @@ import com.ums.upos.sdk.printer.PrinterManager;
 import com.ums.upos.sdk.system.BaseSystemManager;
 import com.ums.upos.sdk.system.OnServiceStatusListener;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class ChinaumsPrinterService extends IntentService {
@@ -40,78 +35,53 @@ public class ChinaumsPrinterService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
-        if (intExtra == 0) {
-            bindService();
-        } else if (intExtra == 1 && mPrinter != null) {
-            try {
+        try {
+            int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
+            if (intExtra == 0) {
+                init();
+            } else if (intExtra == 1 && mPrinter != null) {
                 mPrinter.setPrnText(intent.getStringExtra(EXTRA_TEXT), new FontConfig());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (intExtra == 2) {
-            try {
+            } else if (intExtra == 2) {
                 mPrinter.startPrint(new OnPrintResultListener() {
                     @Override
                     public void onPrintResult(int i) {
-                        try {
-                            BaseSystemManager.getInstance().deviceServiceLogout();
-                        } catch (SdkException e) {
-                            e.printStackTrace();
+                        mCountDownLatch.countDown();
+                    }
+                });
+                mCountDownLatch.await();
+            } else if (intExtra == 3) {
+                close();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * 初始化打印机
+     */
+    private void init() throws Exception {
+        BaseSystemManager.getInstance().deviceServiceLogin(getApplicationContext()
+                , null, "99999998", new OnServiceStatusListener() {
+                    @Override
+                    public void onStatus(int i) {
+                        if (0 == i || 2 == i || 100 == i) {
+                            try {
+                                mPrinter = new PrinterManager();
+                                mPrinter.initPrinter();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            mCountDownLatch.countDown();
                         }
                     }
                 });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (intExtra == 3) {
-
-        }
+        mCountDownLatch.await();
     }
-
-    //绑定服务
-    private void bindService() {
-        try {
-            BaseSystemManager.getInstance().deviceServiceLogin(getApplicationContext()
-                    , null, "99999998", new OnServiceStatusListener() {
-                        @Override
-                        public void onStatus(int i) {
-                            if (0 == i || 2 == i || 100 == i) {
-                                try {
-                                    mPrinter = new PrinterManager();
-                                    mPrinter.initPrinter();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                mCountDownLatch.countDown();
-                            }
-                        }
-                    });
-            mCountDownLatch.await();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     /**
-     * 将意图转为显示意图
-     *
-     * @param implicitIntent 需要转换的意图
-     * @return 转换后意图
+     * 释放打印机
      */
-    private Intent getExplicitIntent(Context context, Intent implicitIntent) {
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
-        if (resolveInfo == null || resolveInfo.size() != 1) {
-            return null;
-        }
-        ResolveInfo serviceInfo = resolveInfo.get(0);
-        String packageName = serviceInfo.serviceInfo.packageName;
-        String className = serviceInfo.serviceInfo.name;
-        ComponentName component = new ComponentName(packageName, className);
-        Intent explicitIntent = new Intent(implicitIntent);
-        explicitIntent.setComponent(component);
-        return explicitIntent;
+    private void close() throws SdkException {
+        BaseSystemManager.getInstance().deviceServiceLogout();
     }
 }
