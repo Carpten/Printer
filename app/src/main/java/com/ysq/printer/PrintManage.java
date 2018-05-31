@@ -18,11 +18,11 @@ public class PrintManage {
 
     public void printDetail() {
         mPrintable.init();
-        mPrintable.printTextCenter("我");
-        mPrintable.printTextCenter("是");
-        mPrintable.printTextCenter("打");
-        mPrintable.printTextCenter("印");
-        mPrintable.printTextCenter("机");
+        mPrintable.printTextCenter("");
+        mPrintable.printTextCenter("");
+        mPrintable.printTextCenter("");
+        mPrintable.printTextCenter("");
+        mPrintable.printTextCenter("");
         mPrintable.startPrint();
         mPrintable.close();
     }

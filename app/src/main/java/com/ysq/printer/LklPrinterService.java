@@ -70,7 +70,7 @@ public class LklPrinterService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
         if (intExtra == 0) {
-            bindService();
+            init();
         } else if (intExtra == 1 && mPrinter != null) {
             mPrintItemObjs.add(new PrintItemObj(intent.getStringExtra(EXTRA_TEXT), 20
                     , true, PrintItemObj.ALIGN.CENTER));
@@ -79,7 +79,6 @@ public class LklPrinterService extends IntentService {
                 mPrinter.printText(mPrintItemObjs, new AidlPrinterListener.Stub() {
                     @Override
                     public void onError(int i) {
-
                     }
 
                     @Override
@@ -91,12 +90,14 @@ public class LklPrinterService extends IntentService {
                 e.printStackTrace();
             }
         } else if (intExtra == 3) {
-            unbindService(mServiceConnection);
+            close();
         }
     }
 
-    //绑定服务
-    private void bindService() {
+    /**
+     * 绑定服务
+     */
+    private void init() {
         Intent intent = new Intent();
         intent.setAction(ACTION_LKL_SERVICE);
         bindService(getExplicitIntent(getApplicationContext(), intent)
@@ -106,6 +107,13 @@ public class LklPrinterService extends IntentService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 释放打印机
+     */
+    private void close() {
+        unbindService(mServiceConnection);
     }
 
 

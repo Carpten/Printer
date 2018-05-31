@@ -29,6 +29,9 @@
             android:name=".LklPrinterService"
             android:exported="false" />
 
+        <service
+            android:name=".ChinaumsPrinterService"
+            android:exported="false" />
     </application>
 
 </manifest>

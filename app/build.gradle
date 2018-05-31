@@ -27,4 +27,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation files('libs/LklMidServiceAidl_V1.0.4.6144.0_20160929.jar')
     implementation files('libs/LklPosUtil.jar')
+    implementation files('libs/sdk4upos_20170808_mix.jar')
 }
