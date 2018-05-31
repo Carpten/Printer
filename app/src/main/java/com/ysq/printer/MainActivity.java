@@ -11,6 +11,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        new PrintManage(new LklPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
     }
 
     public void print(View view) {
