@@ -38,24 +38,19 @@ public class ChinaumsPrinterService extends IntentService {
         try {
             int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
             if (intExtra == 0) {
-                Log.i("test", "0");
                 init();
             } else if (intExtra == 1 && mPrinter != null) {
-                Log.i("test", "1");
                 mPrinter.setPrnText(intent.getStringExtra(EXTRA_TEXT), new FontConfig());
             } else if (intExtra == 2) {
-                Log.i("test", "2");
                 mPrinter.startPrint(new OnPrintResultListener() {
                     @Override
                     public void onPrintResult(int i) {
                         mCountDownLatch.countDown();
-                        Log.i("test", "22");
                     }
                 });
                 mCountDownLatch = new CountDownLatch(1);
                 mCountDownLatch.await();
             } else if (intExtra == 3) {
-                Log.i("test", "3");
                 close();
             }
         } catch (Exception ignored) {
@@ -74,7 +69,6 @@ public class ChinaumsPrinterService extends IntentService {
                             try {
                                 mPrinter = new PrinterManager();
                                 mPrinter.initPrinter();
-                                Log.i("test", "ok init");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
