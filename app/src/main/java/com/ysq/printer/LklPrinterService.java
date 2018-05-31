@@ -12,6 +12,7 @@ import android.os.RemoteException;
 
 import com.lkl.cloudpos.aidl.AidlDeviceService;
 import com.lkl.cloudpos.aidl.printer.AidlPrinter;
+import com.lkl.cloudpos.aidl.printer.AidlPrinterListener;
 import com.lkl.cloudpos.aidl.printer.PrintItemObj;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class LklPrinterService extends IntentService {
     //用来控制线程，将异步转成同步
     private CountDownLatch mCountDownLatch;
     //拉卡拉打印条目
-    private List<PrintItemObj> mPrintItemObjs = new ArrayList<>();
+    private List<PrintItemObj> mPrintItemObjs;
     //拉卡拉打印对象
     private AidlPrinter mPrinter;
 
@@ -50,7 +51,6 @@ public class LklPrinterService extends IntentService {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-
             }
             mCountDownLatch.countDown();
         }
@@ -74,7 +74,19 @@ public class LklPrinterService extends IntentService {
                 mPrintItemObjs.add(new PrintItemObj(intent.getStringExtra(EXTRA_TEXT), 20
                         , true, PrintItemObj.ALIGN.CENTER));
             } else if (intExtra == 2) {
-                mPrinter.printText(mPrintItemObjs, null);
+                mPrinter.printText(mPrintItemObjs, new AidlPrinterListener.Stub() {
+                    @Override
+                    public void onError(int i) {
+                        mCountDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onPrintFinish() {
+                        mCountDownLatch.countDown();
+                    }
+                });
+                mCountDownLatch = new CountDownLatch(1);
+                mCountDownLatch.await();
             } else if (intExtra == 3) {
                 close();
             }
@@ -90,6 +102,7 @@ public class LklPrinterService extends IntentService {
         intent.setAction("lkl_cloudpos_mid_service");
         bindService(getExplicitIntent(getApplicationContext(), intent)
                 , mServiceConnection, Context.BIND_AUTO_CREATE);
+        mPrintItemObjs = new ArrayList<>();
         mCountDownLatch = new CountDownLatch(1);
         mCountDownLatch.await();
     }

@@ -2,7 +2,6 @@ package com.ysq.printer;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import com.ums.upos.sdk.printer.FontConfig;
 import com.ums.upos.sdk.printer.OnPrintResultListener;
