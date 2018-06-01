@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -39,7 +38,6 @@ public class SunmiscPrinterService extends IntentService {
         @Override
         public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
             mPrinter = IWoyouService.Stub.asInterface(serviceBinder);
-            Log.i("test", "countDown");
             mCountDownLatch.countDown();
         }
 
@@ -57,7 +55,6 @@ public class SunmiscPrinterService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
-            Log.i("test", "inExtra:" + intExtra);
             if (intExtra == 0) {
                 init();
             } else if (intExtra == 1 && mPrinter != null) {
@@ -65,12 +62,11 @@ public class SunmiscPrinterService extends IntentService {
                 mPrinter.sendRAWData(COMMAND, null);
                 mPrinter.setAlignment(0, null);
                 //商米打印文字时需要加\r\n
-                mPrinter.printText("sllslg\r\n", null);
+                mPrinter.printText(intent.getStringExtra(EXTRA_TEXT) + "\r\n", null);
             } else if (intExtra == 3) {
                 close();
             }
         } catch (Exception ignored) {
-            Log.i("test", "e:" + ignored.getMessage());
         }
     }
 
@@ -78,11 +74,11 @@ public class SunmiscPrinterService extends IntentService {
      * 初始化打印机
      */
     private void init() throws Exception {
+        mCountDownLatch = new CountDownLatch(1);
         Intent intent = new Intent();
         intent.setPackage("woyou.aidlservice.jiuiv5");
         intent.setAction("woyou.aidlservice.jiuiv5.IWoyouService");
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        mCountDownLatch = new CountDownLatch(1);
         mCountDownLatch.await();
     }
 

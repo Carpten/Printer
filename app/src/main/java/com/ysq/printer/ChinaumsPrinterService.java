@@ -41,13 +41,13 @@ public class ChinaumsPrinterService extends IntentService {
             } else if (intExtra == 1 && mPrinter != null) {
                 mPrinter.setPrnText(intent.getStringExtra(EXTRA_TEXT), new FontConfig());
             } else if (intExtra == 2) {
+                mCountDownLatch = new CountDownLatch(1);
                 mPrinter.startPrint(new OnPrintResultListener() {
                     @Override
                     public void onPrintResult(int i) {
                         mCountDownLatch.countDown();
                     }
                 });
-                mCountDownLatch = new CountDownLatch(1);
                 mCountDownLatch.await();
             } else if (intExtra == 3) {
                 close();
@@ -60,6 +60,7 @@ public class ChinaumsPrinterService extends IntentService {
      * 初始化打印机
      */
     private void init() throws Exception {
+        mCountDownLatch = new CountDownLatch(1);
         BaseSystemManager.getInstance().deviceServiceLogin(getApplicationContext()
                 , null, "99999998", new OnServiceStatusListener() {
                     @Override
@@ -75,7 +76,6 @@ public class ChinaumsPrinterService extends IntentService {
                         mCountDownLatch.countDown();
                     }
                 });
-        mCountDownLatch = new CountDownLatch(1);
         mCountDownLatch.await();
     }
 

@@ -74,6 +74,7 @@ public class LklPrinterService extends IntentService {
                 mPrintItemObjs.add(new PrintItemObj(intent.getStringExtra(EXTRA_TEXT), 20
                         , true, PrintItemObj.ALIGN.CENTER));
             } else if (intExtra == 2) {
+                mCountDownLatch = new CountDownLatch(1);
                 mPrinter.printText(mPrintItemObjs, new AidlPrinterListener.Stub() {
                     @Override
                     public void onError(int i) {
@@ -85,7 +86,6 @@ public class LklPrinterService extends IntentService {
                         mCountDownLatch.countDown();
                     }
                 });
-                mCountDownLatch = new CountDownLatch(1);
                 mCountDownLatch.await();
             } else if (intExtra == 3) {
                 close();
@@ -98,12 +98,12 @@ public class LklPrinterService extends IntentService {
      * 绑定服务
      */
     private void init() throws InterruptedException {
+        mCountDownLatch = new CountDownLatch(1);
         Intent intent = new Intent();
         intent.setAction("lkl_cloudpos_mid_service");
         bindService(getExplicitIntent(getApplicationContext(), intent)
                 , mServiceConnection, Context.BIND_AUTO_CREATE);
         mPrintItemObjs = new ArrayList<>();
-        mCountDownLatch = new CountDownLatch(1);
         mCountDownLatch.await();
     }
 
