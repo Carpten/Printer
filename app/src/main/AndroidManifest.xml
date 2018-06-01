@@ -3,7 +3,7 @@
     package="com.ysq.printer">
 
     <!-- 专门针对商米 -->
-    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CLOUDPOS_MID_PRINTER" />
     <uses-permission android:name="android.permission.CLOUDPOS_MID_ICCARD" />
     <uses-permission android:name="android.permission.CLOUDPOS_MID_SERIALPORT" />
@@ -25,13 +25,11 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".LklPrinterService"
-            android:exported="false" />
+        <service android:name=".LklPrinterService" />
 
-        <service
-            android:name=".ChinaumsPrinterService"
-            android:exported="false" />
+        <service android:name=".ChinaumsPrinterService" />
+
+        <service android:name=".SunmiscPrinterService" />
     </application>
 
 </manifest>
