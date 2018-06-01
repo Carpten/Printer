@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
+//        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
     }
 
     public void print(View view) {
@@ -25,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new BluetoothPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new BluetoothPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new BluetoothPrinter(MainActivity.this
+                , "DC:0D:30:21:24:14")).printDetail();
+        new PrintManage(new BluetoothPrinter(MainActivity.this
+                , "DC:0D:30:21:24:14")).printDetail();
     }
 }

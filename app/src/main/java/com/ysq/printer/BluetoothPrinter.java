@@ -14,16 +14,18 @@ import android.content.Intent;
 public class BluetoothPrinter implements Printable {
 
     private Context mContext;
+    private String mAddress;
 
-    public BluetoothPrinter(Context context) {
+    public BluetoothPrinter(Context context, String address) {
         mContext = context;
+        mAddress = address;
     }
 
     @Override
     public void init() {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
         intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 0);
-        intent.putExtra(BluetoothPrinterService.EXTRA_ADDRESS, "DC:0D:30:21:24:14");
+        intent.putExtra(BluetoothPrinterService.EXTRA_ADDRESS, mAddress);
         mContext.startService(intent);
     }
 
