@@ -23,6 +23,7 @@ public class BluetoothPrinter implements Printable {
     public void init() {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
         intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 0);
+        intent.putExtra(BluetoothPrinterService.EXTRA_ADDRESS, "DC:0D:30:21:24:14");
         mContext.startService(intent);
     }
 

@@ -23,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
 //        new PrintManage(new LklPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
+//        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
+//        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new BluetoothPrinter(MainActivity.this)).printDetail();
+        new PrintManage(new BluetoothPrinter(MainActivity.this)).printDetail();
     }
 }
