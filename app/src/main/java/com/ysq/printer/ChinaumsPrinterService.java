@@ -20,7 +20,7 @@ public class ChinaumsPrinterService extends IntentService {
     /**
      * 意图类型，0：启动打印机，1：打印内容，2：开始打印，3：断开打印机
      */
-    public static final String INTENT_TYPE = "INTENT_TYPE";
+    public static final String EXTRA_TYPE = "EXTRA_TYPE";
 
     //用来控制线程，将异步转成同步
     private CountDownLatch mCountDownLatch;
@@ -35,7 +35,7 @@ public class ChinaumsPrinterService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            int intExtra = intent.getIntExtra(INTENT_TYPE, 0);
+            int intExtra = intent.getIntExtra(EXTRA_TYPE, 0);
             if (intExtra == 0) {
                 init();
             } else if (intExtra == 1 && mPrinter != null) {

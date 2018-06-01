@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ysq.printer">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <!-- 专门针对商米 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CLOUDPOS_MID_PRINTER" />
     <uses-permission android:name="android.permission.CLOUDPOS_MID_ICCARD" />
     <uses-permission android:name="android.permission.CLOUDPOS_MID_SERIALPORT" />
@@ -30,6 +31,8 @@
         <service android:name=".ChinaumsPrinterService" />
 
         <service android:name=".SunmiscPrinterService" />
+
+        <service android:name=".BluetoothPrinterService" />
     </application>
 
 </manifest>

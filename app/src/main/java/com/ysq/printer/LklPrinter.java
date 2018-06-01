@@ -22,14 +22,14 @@ public class LklPrinter implements Printable {
     @Override
     public void init() {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 0);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 0);
         mContext.startService(intent);
     }
 
     @Override
     public void printTextLeft(String text) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 1);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
         mContext.startService(intent);
     }
@@ -37,7 +37,7 @@ public class LklPrinter implements Printable {
     @Override
     public void printTextCenter(String text) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 1);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
         mContext.startService(intent);
     }
@@ -45,7 +45,7 @@ public class LklPrinter implements Printable {
     @Override
     public void printTextHeightDoubleCenter(String text) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 1);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
         mContext.startService(intent);
     }
@@ -53,7 +53,7 @@ public class LklPrinter implements Printable {
     @Override
     public void printBarcode(String orderNumberStr) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 1);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
         mContext.startService(intent);
     }
@@ -61,7 +61,7 @@ public class LklPrinter implements Printable {
     @Override
     public void printQrcode(String text) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 1);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
         mContext.startService(intent);
     }
@@ -69,14 +69,14 @@ public class LklPrinter implements Printable {
     @Override
     public void startPrint() {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 2);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 2);
         mContext.startService(intent);
     }
 
     @Override
     public void close() {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.INTENT_TYPE, 3);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 3);
         mContext.startService(intent);
     }
 }

@@ -1,17 +1,22 @@
 package com.ysq.printer;
 
 import android.app.IntentService;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import woyou.aidlservice.jiuiv5.IWoyouService;
 
-public class SunmiscPrinterService extends IntentService {
+public class BluetoothPrinterService extends IntentService {
 
     /**
      * 打印文档KEY
@@ -21,12 +26,16 @@ public class SunmiscPrinterService extends IntentService {
      * 意图类型，0：启动打印机，1：打印内容，2：开始打印，3：断开打印机
      */
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
+    private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     //用来控制线程，将异步转成同步
     private CountDownLatch mCountDownLatch;
     //银商打印对象
     private IWoyouService mPrinter;
 
+    private BluetoothSocket mBluetoothSocket;
+    private OutputStream mOutputStream;
 
     private static final byte[] CLEAR_FORMAT = {0x1b, 0x40}; //复位打印机
     private static final byte[] COMMAND = {0x1B, 0x21, 0x08};
@@ -47,8 +56,8 @@ public class SunmiscPrinterService extends IntentService {
     };
 
 
-    public SunmiscPrinterService() {
-        super(SunmiscPrinterService.class.getSimpleName());
+    public BluetoothPrinterService() {
+        super(BluetoothPrinterService.class.getSimpleName());
     }
 
     @Override
@@ -56,13 +65,16 @@ public class SunmiscPrinterService extends IntentService {
         try {
             int intExtra = intent.getIntExtra(EXTRA_TYPE, 0);
             if (intExtra == 0) {
-                init();
+                init(intent.getStringExtra(EXTRA_ADDRESS));
             } else if (intExtra == 1 && mPrinter != null) {
-                mPrinter.sendRAWData(CLEAR_FORMAT, null);
-                mPrinter.sendRAWData(COMMAND, null);
-                mPrinter.setAlignment(0, null);
-                //商米打印文字时需要加\r\n
-                mPrinter.printText(intent.getStringExtra(EXTRA_TEXT) + "\r\n", null);
+                try {
+                    byte[] textStr = intent.getStringExtra(EXTRA_TEXT).getBytes("gbk");
+                    mOutputStream.write(CLEAR_FORMAT);
+                    mOutputStream.write(textStr);
+                    mOutputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else if (intExtra == 3) {
                 close();
             }
@@ -73,12 +85,13 @@ public class SunmiscPrinterService extends IntentService {
     /**
      * 初始化打印机
      */
-    private void init() throws Exception {
+    private void init(String address) throws Exception {
         mCountDownLatch = new CountDownLatch(1);
-        Intent intent = new Intent();
-        intent.setPackage("woyou.aidlservice.jiuiv5");
-        intent.setAction("woyou.aidlservice.jiuiv5.IWoyouService");
-        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(address);
+        mBluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+        mBluetoothSocket.connect();
+        mOutputStream = mBluetoothSocket.getOutputStream();
         mCountDownLatch.await();
     }
 
