@@ -27,7 +27,7 @@ public class PrintManage {
             mPrintable.printText("我是内容\r\n", false, false);
             mPrintable.printText("我是内容\r\n", false, false);
             mPrintable.printBarcode("23267419182847");
-//            mPrintable.printQrcode("2326741918284");
+            mPrintable.printQrcode("2326741918284");
             mPrintable.flushPrint();
             mPrintable.delay(DELAY);
         }
