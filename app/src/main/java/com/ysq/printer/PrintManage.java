@@ -10,7 +10,7 @@ package com.ysq.printer;
  */
 public class PrintManage {
 
-    private static final int COUNT = 1;
+    private static final int COUNT = 2;
     private static final int DELAY = 2000;
 
     private Printable mPrintable;
