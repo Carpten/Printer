@@ -35,7 +35,6 @@ public class BarUtils {
             result = writer.encode(contents, format, desiredWidth,
                     desiredHeight, null);
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -69,7 +68,6 @@ public class BarUtils {
             result = writer.encode(contents, format, desiredWidth,
                     desiredHeight, null);
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
