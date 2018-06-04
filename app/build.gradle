@@ -29,4 +29,5 @@ dependencies {
     implementation files('libs/LklPosUtil.jar')
     implementation files('libs/sdk4upos_20170808_mix.jar')
     implementation files('libs/sun.misc.BASE64Decoder.jar')
+    implementation 'com.google.zxing:core:3.3.3'
 }

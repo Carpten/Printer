@@ -30,49 +30,44 @@ public class BluetoothPrinter implements Printable {
     }
 
     @Override
-    public void printTextLeft(String text) {
+    public void printText(String text, boolean isCenter, boolean isLarge) {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, "我是蓝牙打印机");
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 3);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, text);
+        intent.putExtra(BluetoothPrinterService.EXTRA_CENTER, isCenter);
+        intent.putExtra(BluetoothPrinterService.EXTRA_LARGE, isLarge);
         mContext.startService(intent);
     }
 
-    @Override
-    public void printTextCenter(String text) {
-        Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, "我是蓝牙打印机");
-        mContext.startService(intent);
-    }
 
     @Override
-    public void printTextHeightDoubleCenter(String text) {
+    public void printBarcode(String text) {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, "我是蓝牙打印机");
-        mContext.startService(intent);
-    }
-
-    @Override
-    public void printBarcode(String orderNumberStr) {
-        Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, "我是蓝牙打印机");
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 4);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, text);
         mContext.startService(intent);
     }
 
     @Override
     public void printQrcode(String text) {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, "我是蓝牙打印机");
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 5);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TEXT, text);
         mContext.startService(intent);
     }
 
     @Override
-    public void startPrint() {
+    public void flushPrint() {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 2);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 1);
+        mContext.startService(intent);
+    }
+
+    @Override
+    public void delay(int millisecond) {
+        Intent intent = new Intent(mContext, BluetoothPrinterService.class);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 6);
+        intent.putExtra(BluetoothPrinterService.EXTRA_DELAY, millisecond);
         mContext.startService(intent);
     }
 

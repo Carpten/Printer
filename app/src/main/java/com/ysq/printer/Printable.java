@@ -18,22 +18,12 @@ public interface Printable {
     /**
      * 普通文本居左
      */
-    void printTextLeft(String text);
-
-    /**
-     * 普通文本居中
-     */
-    void printTextCenter(String text);
-
-    /**
-     * 高加倍文本居中
-     */
-    void printTextHeightDoubleCenter(String text);
+    void printText(String text, boolean center, boolean largeSize);
 
     /**
      * 打印条形码
      */
-    void printBarcode(String orderNumberStr);
+    void printBarcode(String text);
 
     /**
      * 打印二维码
@@ -42,9 +32,17 @@ public interface Printable {
 
 
     /**
-     * 开始打印
+     * 写入打印
      */
-    void startPrint();
+    void flushPrint();
+
+
+    /**
+     * 延迟打印
+     *
+     * @param millisecond 毫秒数
+     */
+    void delay(int millisecond);
 
     /**
      * 关闭打印机

@@ -27,28 +27,13 @@ public class SunmiscPrinter implements Printable {
     }
 
     @Override
-    public void printTextLeft(String text) {
+    public void printText(String text, boolean center, boolean largeSize) {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
         intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, "我是商米打印机");
         mContext.startService(intent);
     }
 
-    @Override
-    public void printTextCenter(String text) {
-        Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, "我是商米打印机");
-        mContext.startService(intent);
-    }
-
-    @Override
-    public void printTextHeightDoubleCenter(String text) {
-        Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, "我是商米打印机");
-        mContext.startService(intent);
-    }
 
     @Override
     public void printBarcode(String orderNumberStr) {
@@ -67,10 +52,15 @@ public class SunmiscPrinter implements Printable {
     }
 
     @Override
-    public void startPrint() {
+    public void flushPrint() {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
         intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 2);
         mContext.startService(intent);
+    }
+
+    @Override
+    public void delay(int millisecond) {
+
     }
 
     @Override

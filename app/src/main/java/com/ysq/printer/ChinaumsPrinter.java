@@ -27,28 +27,13 @@ public class ChinaumsPrinter implements Printable {
     }
 
     @Override
-    public void printTextLeft(String text) {
+    public void printText(String text, boolean center, boolean largeSize) {
         Intent intent = new Intent(mContext, ChinaumsPrinterService.class);
         intent.putExtra(ChinaumsPrinterService.EXTRA_TYPE, 1);
         intent.putExtra(ChinaumsPrinterService.EXTRA_TEXT, "我是银联商务打印机");
         mContext.startService(intent);
     }
 
-    @Override
-    public void printTextCenter(String text) {
-        Intent intent = new Intent(mContext, ChinaumsPrinterService.class);
-        intent.putExtra(ChinaumsPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(ChinaumsPrinterService.EXTRA_TEXT, "我是银联商务打印机");
-        mContext.startService(intent);
-    }
-
-    @Override
-    public void printTextHeightDoubleCenter(String text) {
-        Intent intent = new Intent(mContext, ChinaumsPrinterService.class);
-        intent.putExtra(ChinaumsPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(ChinaumsPrinterService.EXTRA_TEXT, "我是银联商务打印机");
-        mContext.startService(intent);
-    }
 
     @Override
     public void printBarcode(String orderNumberStr) {
@@ -67,10 +52,15 @@ public class ChinaumsPrinter implements Printable {
     }
 
     @Override
-    public void startPrint() {
+    public void flushPrint() {
         Intent intent = new Intent(mContext, ChinaumsPrinterService.class);
         intent.putExtra(ChinaumsPrinterService.EXTRA_TYPE, 2);
         mContext.startService(intent);
+    }
+
+    @Override
+    public void delay(int millisecond) {
+
     }
 
     @Override

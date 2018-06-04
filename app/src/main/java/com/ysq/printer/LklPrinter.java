@@ -7,7 +7,7 @@ import android.content.Intent;
  * <pre>
  * author : 杨水强
  * time   : 2018/05/31
- * desc   :
+ * desc   : 拉卡拉打印接口类，这个类通过调用拉卡拉服务实现接口Printable
  * version: 1.0
  * </pre>
  */
@@ -27,56 +27,50 @@ public class LklPrinter implements Printable {
     }
 
     @Override
-    public void printTextLeft(String text) {
+    public void printText(String text, boolean isCenter, boolean isLarge) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 3);
+        intent.putExtra(LklPrinterService.EXTRA_TEXT, text);
+        intent.putExtra(LklPrinterService.EXTRA_CENTER, isCenter);
+        intent.putExtra(LklPrinterService.EXTRA_LARGE, isLarge);
         mContext.startService(intent);
     }
 
     @Override
-    public void printTextCenter(String text) {
+    public void printBarcode(String text) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
-        mContext.startService(intent);
-    }
-
-    @Override
-    public void printTextHeightDoubleCenter(String text) {
-        Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
-        mContext.startService(intent);
-    }
-
-    @Override
-    public void printBarcode(String orderNumberStr) {
-        Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 4);
+        intent.putExtra(LklPrinterService.EXTRA_TEXT, text);
         mContext.startService(intent);
     }
 
     @Override
     public void printQrcode(String text) {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(LklPrinterService.EXTRA_TEXT, "我是拉卡拉打印机");
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 5);
+        intent.putExtra(LklPrinterService.EXTRA_TEXT, text);
         mContext.startService(intent);
     }
 
     @Override
-    public void startPrint() {
+    public void flushPrint() {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 2);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 1);
+        mContext.startService(intent);
+    }
+
+    @Override
+    public void delay(int millisecond) {
+        Intent intent = new Intent(mContext, LklPrinterService.class);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 6);
+        intent.putExtra(LklPrinterService.EXTRA_DELAY, millisecond);
         mContext.startService(intent);
     }
 
     @Override
     public void close() {
         Intent intent = new Intent(mContext, LklPrinterService.class);
-        intent.putExtra(LklPrinterService.EXTRA_TYPE, 3);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 2);
         mContext.startService(intent);
     }
 }

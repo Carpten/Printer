@@ -14,21 +14,52 @@ import java.util.UUID;
 public class BluetoothPrinterService extends IntentService {
 
     /**
-     * 打印文档KEY
-     */
-    public static final String EXTRA_TEXT = "com.ysq.printer.action.EXTRA_TEXT";
-    /**
-     * 意图类型，0：启动打印机，1：打印内容，2：开始打印，3：断开打印机
+     * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
+     * ，4：打印条码，5：打印二维码，6：打印延迟
      */
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
-    public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
-    private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    /**
+     * 打印文字内容传值键
+     */
+    public static final String EXTRA_TEXT = "EXTRA_TEXT";
+
+    /**
+     * 打印文字是否居中传值键
+     */
+    public static final String EXTRA_CENTER = "EXTRA_CENTER";
+
+    /**
+     * 打印文字是否加大传值键
+     */
+    public static final String EXTRA_LARGE = "EXTRA_LARGE";
+
+    /**
+     * 打印延迟传值键
+     */
+    public static final String EXTRA_DELAY = "EXTRA_DELAY";
+
+    /**
+     * 蓝牙地址传值键
+     */
+    public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
+
+    //蓝牙打印所需的UUID
+    private static final UUID BLUETOOTH_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    // 蓝牙SOCKET对象
     private BluetoothSocket mBluetoothSocket;
+
+    // 蓝牙SOCKET输出流
     private OutputStream mOutputStream;
 
-    private static final byte[] CLEAR_FORMAT = {0x1b, 0x40}; //复位打印机
-    private static final byte[] COMMAND = {0x1B, 0x21, 0x08};
+    private static final byte[] COMMAND_CLEAR_FORMAT = {0x1b, 0x40}; //复位打印机
+    private static final byte[] COMMAND_CENTER = {0x1b, 0x61, 0x01};//居中指令
+    private static final byte[] COMMAND_DOUBLE_HEIGHT = {0x1d, 0x21, 0x01}; //高加倍
+    private static final byte[] COMMAND_WIDTH = {0x1D, 0x77, 0x02};//设置条码宽
+    private static final byte[] COMMAND_HEIGHT = {0x1D, 0x68, 0x50};//设置条码高
+    private static final byte[] COMAND_TOP_FROMAT = {0x1d, 0x48, 0x00}; //设置条码样式
+    private static final byte[] COMMAND_ONE_CODE = {0x1D, 0x6B, 0x49, 0x0E, 0x7B, 0x43};//一维码指令
 
 
     public BluetoothPrinterService() {
@@ -42,15 +73,19 @@ public class BluetoothPrinterService extends IntentService {
             if (intExtra == 0) {
                 init(intent.getStringExtra(EXTRA_ADDRESS));
             } else if (intExtra == 1) {
-                byte[] textStr = intent.getStringExtra(EXTRA_TEXT).getBytes("gbk");
-                mOutputStream.write(CLEAR_FORMAT);
-                mOutputStream.write(textStr);
-                mOutputStream.flush();
-            } else if (intExtra == 3) {
+                flushPrint();
+            } else if (intExtra == 2) {
                 close();
+            } else if (intExtra == 3) {
+                printText(intent);
+            } else if (intExtra == 4) {
+                printBarCode(intent);
+            } else if (intExtra == 5) {
+                printQrcode(intent);
+            } else if (intExtra == 6) {
+                delay(intent);
             }
         } catch (Exception ignored) {
-            Log.i("test", ignored.getMessage());
         }
     }
 
@@ -60,9 +95,14 @@ public class BluetoothPrinterService extends IntentService {
     private void init(String address) throws Exception {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(address);
-        mBluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+        mBluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(BLUETOOTH_UUID);
         mBluetoothSocket.connect();
         mOutputStream = mBluetoothSocket.getOutputStream();
+    }
+
+    //写入打印机，某些打印机在startPrint以后需要flushPrint操作
+    private void flushPrint() {
+
     }
 
     /**
@@ -75,5 +115,73 @@ public class BluetoothPrinterService extends IntentService {
         if (mBluetoothSocket != null && mBluetoothSocket.isConnected()) {
             mBluetoothSocket.close();
         }
+    }
+
+
+    /**
+     * 打印文字
+     */
+    private void printText(Intent intent) throws Exception {
+        byte[] textStr = intent.getStringExtra(EXTRA_TEXT).getBytes("gbk");
+        boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
+        boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
+        mOutputStream.write(COMMAND_CLEAR_FORMAT);
+        if (isCenter) {
+            mOutputStream.write(COMMAND_CENTER);
+        }
+        if (isLarge) {
+            mOutputStream.write(COMMAND_DOUBLE_HEIGHT);
+        }
+        mOutputStream.write(textStr);
+        mOutputStream.flush();
+    }
+
+
+    /**
+     * 打印条形码
+     */
+    private void printBarCode(Intent intent) throws Exception {
+        String text = intent.getStringExtra(EXTRA_TEXT);
+        byte[] b = new byte[13];
+        int i = 0;
+        while (2 * i < text.length()) {
+            String s = text.substring(2 * i, 2 * i + 2);
+            b[i] = Byte.parseByte(s);
+            i++;
+        }
+        //一维码打印
+        mOutputStream.write(COMMAND_CLEAR_FORMAT);
+        mOutputStream.write(COMMAND_HEIGHT);
+        mOutputStream.write(COMMAND_WIDTH);
+        mOutputStream.write(COMMAND_CENTER);
+        mOutputStream.write(COMAND_TOP_FROMAT);
+        mOutputStream.write(COMMAND_ONE_CODE);
+        mOutputStream.write(b);
+        mOutputStream.flush();
+    }
+
+    /**
+     * 打印二维码
+     */
+    private void printQrcode(Intent intent) throws Exception {
+        String text = intent.getStringExtra(EXTRA_TEXT);
+        Integer pl = (text.length() + 3) % 256;
+        Integer ph = (text.length() + 3) / 256;
+        //oncode是需要的
+        mOutputStream.write(COMMAND_CLEAR_FORMAT);
+        mOutputStream.write(new byte[]{0x1B, 0x61, 0x01});
+        mOutputStream.write(new byte[]{0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x08});
+        mOutputStream.write(new byte[]{0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x30});
+        mOutputStream.write(new byte[]{0x1D, 0x28, 0x6B, pl.byteValue(), ph.byteValue(), 0x31, 0x50, 0x30});
+        mOutputStream.write(text.getBytes());
+        mOutputStream.write(new byte[]{0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30});
+        mOutputStream.flush();
+    }
+
+    /**
+     * 延迟
+     */
+    private void delay(Intent intent) throws InterruptedException {
+        Thread.sleep(intent.getIntExtra(EXTRA_DELAY, 0));
     }
 }
