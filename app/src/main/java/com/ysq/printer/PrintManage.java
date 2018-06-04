@@ -22,12 +22,12 @@ public class PrintManage {
     public void printDetail() {
         mPrintable.init();
         for (int i = 0; i < COUNT; i++) {
-            mPrintable.printText("我是标题\r\n", true, true);
-            mPrintable.printText("我是内容\r\n", false, false);
-            mPrintable.printText("我是内容\r\n", false, false);
-            mPrintable.printText("我是内容\r\n", false, false);
-            mPrintable.printBarcode("23267419182847");
-            mPrintable.printQrcode("2326741918284");
+            mPrintable.printText("我是标题", true, true);
+            mPrintable.printText("我是内容", false, false);
+            mPrintable.printText("我是内容", false, false);
+            mPrintable.printText("我是内容", false, false);
+            mPrintable.printBarcode("201806041806071826001110");
+            mPrintable.printQrcode("201806041806071826001110");
             mPrintable.flushPrint();
             mPrintable.delay(DELAY);
         }

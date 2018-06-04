@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -122,7 +121,7 @@ public class BluetoothPrinterService extends IntentService {
      * 打印文字
      */
     private void printText(Intent intent) throws Exception {
-        byte[] textStr = intent.getStringExtra(EXTRA_TEXT).getBytes("gbk");
+        byte[] text = (intent.getStringExtra(EXTRA_TEXT) + "\r\n").getBytes("gbk");
         boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
         boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
         mOutputStream.write(COMMAND_CLEAR_FORMAT);
@@ -132,7 +131,7 @@ public class BluetoothPrinterService extends IntentService {
         if (isLarge) {
             mOutputStream.write(COMMAND_DOUBLE_HEIGHT);
         }
-        mOutputStream.write(textStr);
+        mOutputStream.write(text);
         mOutputStream.flush();
     }
 
@@ -167,7 +166,6 @@ public class BluetoothPrinterService extends IntentService {
         String text = intent.getStringExtra(EXTRA_TEXT);
         Integer pl = (text.length() + 3) % 256;
         Integer ph = (text.length() + 3) / 256;
-        //oncode是需要的
         mOutputStream.write(COMMAND_CLEAR_FORMAT);
         mOutputStream.write(new byte[]{0x1B, 0x61, 0x01});
         mOutputStream.write(new byte[]{0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x08});

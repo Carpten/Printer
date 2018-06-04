@@ -14,13 +14,30 @@ import java.util.concurrent.CountDownLatch;
 public class ChinaumsPrinterService extends IntentService {
 
     /**
-     * 打印文档KEY
-     */
-    public static final String EXTRA_TEXT = "com.ysq.printer.action.EXTRA_TEXT";
-    /**
-     * 意图类型，0：启动打印机，1：打印内容，2：开始打印，3：断开打印机
+     * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
+     * ，4：打印条码，5：打印二维码，6：打印延迟
      */
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
+
+    /**
+     * 打印文字内容传值键
+     */
+    public static final String EXTRA_TEXT = "EXTRA_TEXT";
+
+    /**
+     * 打印文字是否居中传值键
+     */
+    public static final String EXTRA_CENTER = "EXTRA_CENTER";
+
+    /**
+     * 打印文字是否加大传值键
+     */
+    public static final String EXTRA_LARGE = "EXTRA_LARGE";
+
+    /**
+     * 打印延迟传值键
+     */
+    public static final String EXTRA_DELAY = "EXTRA_DELAY";
 
     //用来控制线程，将异步转成同步
     private CountDownLatch mCountDownLatch;
