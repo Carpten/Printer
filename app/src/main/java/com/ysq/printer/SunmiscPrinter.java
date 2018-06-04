@@ -27,46 +27,51 @@ public class SunmiscPrinter implements Printable {
     }
 
     @Override
-    public void printText(String text, boolean center, boolean largeSize) {
+    public void printText(String text, boolean isCenter, boolean isLarge) {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, "我是商米打印机");
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 3);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, text);
+        intent.putExtra(SunmiscPrinterService.EXTRA_CENTER, isCenter);
+        intent.putExtra(SunmiscPrinterService.EXTRA_LARGE, isLarge);
         mContext.startService(intent);
     }
 
 
     @Override
-    public void printBarcode(String orderNumberStr) {
+    public void printBarcode(String text) {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, "我是商米打印机");
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 4);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, text);
         mContext.startService(intent);
     }
 
     @Override
     public void printQrcode(String text) {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, "我是商米打印机");
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 5);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TEXT, text);
         mContext.startService(intent);
     }
 
     @Override
     public void flushPrint() {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 2);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 1);
         mContext.startService(intent);
     }
 
     @Override
     public void delay(int millisecond) {
-
+        Intent intent = new Intent(mContext, SunmiscPrinterService.class);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 6);
+        intent.putExtra(SunmiscPrinterService.EXTRA_DELAY, millisecond);
+        mContext.startService(intent);
     }
 
     @Override
     public void close() {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
-        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 3);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 2);
         mContext.startService(intent);
     }
 }

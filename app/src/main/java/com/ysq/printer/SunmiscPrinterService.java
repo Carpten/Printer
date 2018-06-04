@@ -5,7 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
+
+import com.google.zxing.BarcodeFormat;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -14,13 +17,30 @@ import woyou.aidlservice.jiuiv5.IWoyouService;
 public class SunmiscPrinterService extends IntentService {
 
     /**
-     * 打印文档KEY
-     */
-    public static final String EXTRA_TEXT = "com.ysq.printer.action.EXTRA_TEXT";
-    /**
-     * 意图类型，0：启动打印机，1：打印内容，2：开始打印，3：断开打印机
+     * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
+     * ，4：打印条码，5：打印二维码，6：打印延迟
      */
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
+
+    /**
+     * 打印文字内容传值键
+     */
+    public static final String EXTRA_TEXT = "EXTRA_TEXT";
+
+    /**
+     * 打印文字是否居中传值键
+     */
+    public static final String EXTRA_CENTER = "EXTRA_CENTER";
+
+    /**
+     * 打印文字是否加大传值键
+     */
+    public static final String EXTRA_LARGE = "EXTRA_LARGE";
+
+    /**
+     * 打印延迟传值键
+     */
+    public static final String EXTRA_DELAY = "EXTRA_DELAY";
 
     //用来控制线程，将异步转成同步
     private CountDownLatch mCountDownLatch;
@@ -29,7 +49,8 @@ public class SunmiscPrinterService extends IntentService {
 
 
     private static final byte[] CLEAR_FORMAT = {0x1b, 0x40}; //复位打印机
-    private static final byte[] COMMAND = {0x1B, 0x21, 0x08};
+    private static final byte[] COMMAND_UNSPECIFIED = {0x1B, 0x21, 0x08};//老代码，我也不知道有什么用
+    private static final byte[] COMMAND_DOUBLE_HEIGHT = {0x1d, 0x21, 0x01}; //高加倍
     /**
      * 设别服务连接桥
      */
@@ -57,14 +78,18 @@ public class SunmiscPrinterService extends IntentService {
             int intExtra = intent.getIntExtra(EXTRA_TYPE, 0);
             if (intExtra == 0) {
                 init();
-            } else if (intExtra == 1 && mPrinter != null) {
-                mPrinter.sendRAWData(CLEAR_FORMAT, null);
-                mPrinter.sendRAWData(COMMAND, null);
-                mPrinter.setAlignment(0, null);
-                //商米打印文字时需要加\r\n
-                mPrinter.printText(intent.getStringExtra(EXTRA_TEXT) + "\r\n", null);
-            } else if (intExtra == 3) {
+            } else if (intExtra == 1) {
+                flushPrint();
+            } else if (intExtra == 2) {
                 close();
+            } else if (intExtra == 3) {
+                printText(intent);
+            } else if (intExtra == 4) {
+                printBarCode(intent);
+            } else if (intExtra == 5) {
+                printQrcode(intent);
+            } else if (intExtra == 6) {
+                delay(intent);
             }
         } catch (Exception ignored) {
         }
@@ -82,10 +107,65 @@ public class SunmiscPrinterService extends IntentService {
         mCountDownLatch.await();
     }
 
+
+    /**
+     * 写入打印机，某些打印机在startPrint以后需要flushPrint操作
+     */
+    private void flushPrint() {
+    }
+
     /**
      * 释放打印机
      */
     private void close() {
         unbindService(mServiceConnection);
+    }
+
+    /**
+     * 打印文字
+     */
+    private void printText(Intent intent) throws Exception {
+        boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
+        boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
+        mPrinter.sendRAWData(CLEAR_FORMAT, null);
+        mPrinter.sendRAWData(COMMAND_UNSPECIFIED, null);
+        if (isLarge) {
+            mPrinter.sendRAWData(COMMAND_DOUBLE_HEIGHT, null);
+        }
+        mPrinter.setAlignment(isCenter ? 1 : 0, null);
+        //商米打印文字时需要加\r\n
+        mPrinter.printText(intent.getStringExtra(EXTRA_TEXT) + "\r\n", null);
+
+    }
+
+    /**
+     * 打印条形码
+     */
+    private void printBarCode(Intent intent) throws Exception {
+        mPrinter.sendRAWData(CLEAR_FORMAT, null);
+        mPrinter.setAlignment(1, null);
+        Bitmap bitmap = BarUtils.encodeAsBitmap(intent.getStringExtra(EXTRA_TEXT)
+                , BarcodeFormat.CODE_128, 380, 80);
+        mPrinter.printBitmap(bitmap, null);
+        mPrinter.lineWrap(1, null);
+    }
+
+    /**
+     * 打印二维码
+     */
+    private void printQrcode(Intent intent) throws Exception {
+        mPrinter.sendRAWData(CLEAR_FORMAT, null);
+        mPrinter.setAlignment(1, null);
+        Bitmap bitmap = BarUtils.encodeAsBitmap(intent.getStringExtra(EXTRA_TEXT)
+                , BarcodeFormat.QR_CODE, 300, 300);
+        mPrinter.printBitmap(bitmap, null);
+        mPrinter.lineWrap(1, null);
+    }
+
+    /**
+     * 延迟
+     */
+    private void delay(Intent intent) throws InterruptedException {
+        Thread.sleep(intent.getIntExtra(EXTRA_DELAY, 0));
     }
 }

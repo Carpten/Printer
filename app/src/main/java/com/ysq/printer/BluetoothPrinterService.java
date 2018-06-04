@@ -99,7 +99,9 @@ public class BluetoothPrinterService extends IntentService {
         mOutputStream = mBluetoothSocket.getOutputStream();
     }
 
-    //写入打印机，某些打印机在startPrint以后需要flushPrint操作
+    /**
+     * 写入打印机，某些打印机在startPrint以后需要flushPrint操作
+     */
     private void flushPrint() {
 
     }

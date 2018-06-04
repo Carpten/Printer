@@ -2,7 +2,9 @@ package com.ysq.printer;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.graphics.Bitmap;
 
+import com.google.zxing.BarcodeFormat;
 import com.ums.upos.sdk.printer.FontConfig;
 import com.ums.upos.sdk.printer.OnPrintResultListener;
 import com.ums.upos.sdk.printer.PrinterManager;
@@ -55,19 +57,18 @@ public class ChinaumsPrinterService extends IntentService {
             int intExtra = intent.getIntExtra(EXTRA_TYPE, 0);
             if (intExtra == 0) {
                 init();
-            } else if (intExtra == 1 && mPrinter != null) {
-                mPrinter.setPrnText(intent.getStringExtra(EXTRA_TEXT), new FontConfig());
+            } else if (intExtra == 1) {
+                flushPrint();
             } else if (intExtra == 2) {
-                mCountDownLatch = new CountDownLatch(1);
-                mPrinter.startPrint(new OnPrintResultListener() {
-                    @Override
-                    public void onPrintResult(int i) {
-                        mCountDownLatch.countDown();
-                    }
-                });
-                mCountDownLatch.await();
-            } else if (intExtra == 3) {
                 close();
+            } else if (intExtra == 3) {
+                printText(intent);
+            } else if (intExtra == 4) {
+                printBarCode(intent);
+            } else if (intExtra == 5) {
+                printQrcode(intent);
+            } else if (intExtra == 6) {
+                delay(intent);
             }
         } catch (Exception ignored) {
         }
@@ -96,10 +97,58 @@ public class ChinaumsPrinterService extends IntentService {
         mCountDownLatch.await();
     }
 
+
+    /**
+     * 写入打印机，某些打印机在startPrint以后需要flushPrint操作
+     */
+    private void flushPrint() throws Exception {
+        mCountDownLatch = new CountDownLatch(1);
+        mPrinter.startPrint(new OnPrintResultListener() {
+            @Override
+            public void onPrintResult(int i) {
+                mCountDownLatch.countDown();
+            }
+        });
+        mCountDownLatch.await();
+    }
+
     /**
      * 释放打印机
      */
     private void close() throws Exception {
         BaseSystemManager.getInstance().deviceServiceLogout();
+    }
+
+
+    /**
+     * 打印文字
+     */
+    private void printText(Intent intent) throws Exception {
+        mPrinter.setPrnText(intent.getStringExtra(EXTRA_TEXT), new FontConfig());
+    }
+
+    /**
+     * 打印条形码
+     */
+    private void printBarCode(Intent intent) throws Exception {
+        Bitmap bitmap = BarUtils.encodeAsBitmap(intent.getStringExtra(EXTRA_TEXT)
+                , BarcodeFormat.CODE_128, 380, 80);
+        mPrinter.setBitmap(bitmap);
+    }
+
+    /**
+     * 打印二维码
+     */
+    private void printQrcode(Intent intent) throws Exception {
+        Bitmap bitmap = BarUtils.encodeAsBitmapOffset(intent.getStringExtra(EXTRA_TEXT)
+                , BarcodeFormat.QR_CODE, 300, 300, 44);
+        mPrinter.setBitmap(bitmap);
+    }
+
+    /**
+     * 延迟
+     */
+    private void delay(Intent intent) throws InterruptedException {
+        Thread.sleep(intent.getIntExtra(EXTRA_DELAY, 0));
     }
 }
