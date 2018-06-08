@@ -14,11 +14,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void print(View view) {
 //        new PrintManage(new LklPrinter(MainActivity.this)).printDetail();
-        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
+//        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
-//        new PrintManage(new BluetoothPrinter(
-//                MainActivity.this, "DC:0D:30:21:24:14")).printDetail();
-//        new PrintManage(new BluetoothPrinter(
-//                MainActivity.this, "DC:0D:30:21:24:14")).printDetail();
+        new PrintManage(new BluetoothPrinter(
+                MainActivity.this, "DC:0D:30:21:24:14")).printDetail();
     }
 }

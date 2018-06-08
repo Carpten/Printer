@@ -69,6 +69,13 @@ public class ChinaumsPrinter implements Printable {
     }
 
     @Override
+    public void feedPaper() {
+        Intent intent = new Intent(mContext, ChinaumsPrinterService.class);
+        intent.putExtra(ChinaumsPrinterService.EXTRA_TYPE, 7);
+        mContext.startService(intent);
+    }
+
+    @Override
     public void close() {
         Intent intent = new Intent(mContext, ChinaumsPrinterService.class);
         intent.putExtra(ChinaumsPrinterService.EXTRA_TYPE, 2);

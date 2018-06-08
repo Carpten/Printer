@@ -69,6 +69,13 @@ public class SunmiscPrinter implements Printable {
     }
 
     @Override
+    public void feedPaper() {
+        Intent intent = new Intent(mContext, SunmiscPrinterService.class);
+        intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 7);
+        mContext.startService(intent);
+    }
+
+    @Override
     public void close() {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
         intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 2);

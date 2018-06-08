@@ -45,6 +45,11 @@ public interface Printable {
     void delay(int millisecond);
 
     /**
+     * 打印机走纸
+     */
+    void feedPaper();
+
+    /**
      * 关闭打印机
      */
     void close();

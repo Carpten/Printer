@@ -18,7 +18,7 @@ public class SunmiscPrinterService extends IntentService {
 
     /**
      * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
-     * ，4：打印条码，5：打印二维码，6：打印延迟
+     * ，4：打印条码，5：打印二维码，6：打印延迟，7：打印机走纸
      */
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
 
@@ -83,13 +83,18 @@ public class SunmiscPrinterService extends IntentService {
             } else if (intExtra == 2) {
                 close();
             } else if (intExtra == 3) {
-                printText(intent);
+                String text = intent.getStringExtra(EXTRA_TEXT);
+                boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
+                boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
+                printText(text, isCenter, isLarge);
             } else if (intExtra == 4) {
-                printBarCode(intent);
+                printBarCode(intent.getStringExtra(EXTRA_TEXT));
             } else if (intExtra == 5) {
-                printQrcode(intent);
+                printQrcode(intent.getStringExtra(EXTRA_TEXT));
             } else if (intExtra == 6) {
-                delay(intent);
+                delay(intent.getIntExtra(EXTRA_DELAY, 0));
+            } else if (intExtra == 7) {
+                feedPaper();
             }
         } catch (Exception ignored) {
         }
@@ -124,9 +129,7 @@ public class SunmiscPrinterService extends IntentService {
     /**
      * 打印文字
      */
-    private void printText(Intent intent) throws Exception {
-        boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
-        boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
+    private void printText(String text, boolean isCenter, boolean isLarge) throws Exception {
         mPrinter.sendRAWData(CLEAR_FORMAT, null);
         mPrinter.sendRAWData(COMMAND_UNSPECIFIED, null);
         if (isLarge) {
@@ -134,17 +137,17 @@ public class SunmiscPrinterService extends IntentService {
         }
         mPrinter.setAlignment(isCenter ? 1 : 0, null);
         //商米打印文字时需要加\r\n
-        mPrinter.printText(intent.getStringExtra(EXTRA_TEXT) + "\r\n", null);
+        mPrinter.printText(text + "\n", null);
 
     }
 
     /**
      * 打印条形码
      */
-    private void printBarCode(Intent intent) throws Exception {
+    private void printBarCode(String text) throws Exception {
         mPrinter.sendRAWData(CLEAR_FORMAT, null);
         mPrinter.setAlignment(1, null);
-        Bitmap bitmap = BarUtils.encodeAsBitmap(intent.getStringExtra(EXTRA_TEXT)
+        Bitmap bitmap = BarUtils.encodeAsBitmap(text
                 , BarcodeFormat.CODE_128, 380, 80);
         mPrinter.printBitmap(bitmap, null);
         mPrinter.lineWrap(1, null);
@@ -153,10 +156,10 @@ public class SunmiscPrinterService extends IntentService {
     /**
      * 打印二维码
      */
-    private void printQrcode(Intent intent) throws Exception {
+    private void printQrcode(String text) throws Exception {
         mPrinter.sendRAWData(CLEAR_FORMAT, null);
         mPrinter.setAlignment(1, null);
-        Bitmap bitmap = BarUtils.encodeAsBitmap(intent.getStringExtra(EXTRA_TEXT)
+        Bitmap bitmap = BarUtils.encodeAsBitmap(text
                 , BarcodeFormat.QR_CODE, 300, 300);
         mPrinter.printBitmap(bitmap, null);
         mPrinter.lineWrap(1, null);
@@ -165,7 +168,14 @@ public class SunmiscPrinterService extends IntentService {
     /**
      * 延迟
      */
-    private void delay(Intent intent) throws InterruptedException {
-        Thread.sleep(intent.getIntExtra(EXTRA_DELAY, 0));
+    private void delay(int millisecond) throws InterruptedException {
+        Thread.sleep(millisecond);
+    }
+
+    /**
+     * 打印机走纸，通过调用打印两行空白文字实现
+     */
+    private void feedPaper() throws Exception {
+        printText("\n\n", false, false);
     }
 }

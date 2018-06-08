@@ -33,7 +33,7 @@ public class LklPrinterService extends IntentService {
 
     /**
      * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
-     * ，4：打印条码，5：打印二维码，6：打印延迟
+     * ，4：打印条码，5：打印二维码，6：打印延迟，7：打印机走纸
      */
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
 
@@ -90,13 +90,18 @@ public class LklPrinterService extends IntentService {
             } else if (intExtra == 2) {
                 close();
             } else if (intExtra == 3) {
-                printText(intent);
+                String text = intent.getStringExtra(EXTRA_TEXT);
+                boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
+                boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
+                printText(text, isCenter, isLarge);
             } else if (intExtra == 4) {
-                printBarCode(intent);
+                printBarCode(intent.getStringExtra(EXTRA_TEXT));
             } else if (intExtra == 5) {
-                printQrcode(intent);
+                printQrcode(intent.getStringExtra(EXTRA_TEXT));
             } else if (intExtra == 6) {
-                delay(intent);
+                delay(intent.getIntExtra(EXTRA_DELAY, 0));
+            } else if (intExtra == 7) {
+                feedPaper();
             }
         } catch (Exception ignored) {
             if (mCountDownLatch != null) {
@@ -157,13 +162,10 @@ public class LklPrinterService extends IntentService {
     /**
      * 打印文字
      */
-    private void printText(Intent intent) throws Exception {
+    private void printText(String text, boolean isCenter, boolean isLarge) throws Exception {
         mCountDownLatch = new CountDownLatch(1);
         //拉卡拉打印条目
         List<PrintItemObj> printItemObjs = new ArrayList<>();
-        String text = intent.getStringExtra(EXTRA_TEXT);
-        boolean isCenter = intent.getBooleanExtra(EXTRA_CENTER, false);
-        boolean isLarge = intent.getBooleanExtra(EXTRA_LARGE, false);
         printItemObjs.add(new PrintItemObj(text, isLarge ? 20 : 8, true
                 , isCenter ? PrintItemObj.ALIGN.CENTER : PrintItemObj.ALIGN.LEFT));
         mPrinter.printText(printItemObjs, mListener);
@@ -173,19 +175,18 @@ public class LklPrinterService extends IntentService {
     /**
      * 打印条形码
      */
-    private void printBarCode(Intent intent) throws Exception {
+    private void printBarCode(String text) throws Exception {
         mCountDownLatch = new CountDownLatch(1);
-        mPrinter.printBarCode(-1, 100, 18, 73
-                , intent.getStringExtra(EXTRA_TEXT), mListener);
+        mPrinter.printBarCode(-1, 100, 18, 73, text, mListener);
         mCountDownLatch.await();
     }
 
     /**
      * 打印二维码
      */
-    private void printQrcode(Intent intent) throws Exception {
+    private void printQrcode(String text) throws Exception {
         mCountDownLatch = new CountDownLatch(1);
-        Bitmap bitmap = BarUtils.encodeAsBitmap(intent.getStringExtra(EXTRA_TEXT)
+        Bitmap bitmap = BarUtils.encodeAsBitmap(text
                 , BarcodeFormat.QR_CODE, 300, 300);
         mPrinter.printBmp(46, 300, 300, bitmap, mListener);
         mCountDownLatch.await();
@@ -194,10 +195,17 @@ public class LklPrinterService extends IntentService {
     /**
      * 延迟
      */
-    private void delay(Intent intent) throws InterruptedException {
-        Thread.sleep(intent.getIntExtra(EXTRA_DELAY, 0));
+    private void delay(int millisecond) throws InterruptedException {
+        Thread.sleep(millisecond);
     }
 
+
+    /**
+     * 打印机走纸，通过调用打印两行空白文字实现
+     */
+    private void feedPaper() throws Exception {
+        printText("\n\n", false, false);
+    }
 
     /**
      * 将意图转为显示意图

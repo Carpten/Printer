@@ -68,9 +68,18 @@ public class LklPrinter implements Printable {
     }
 
     @Override
+    public void feedPaper() {
+        Intent intent = new Intent(mContext, LklPrinterService.class);
+        intent.putExtra(LklPrinterService.EXTRA_TYPE, 7);
+        mContext.startService(intent);
+    }
+
+    @Override
     public void close() {
         Intent intent = new Intent(mContext, LklPrinterService.class);
         intent.putExtra(LklPrinterService.EXTRA_TYPE, 2);
         mContext.startService(intent);
     }
+
+
 }

@@ -72,9 +72,16 @@ public class BluetoothPrinter implements Printable {
     }
 
     @Override
+    public void feedPaper() {
+        Intent intent = new Intent(mContext, BluetoothPrinterService.class);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 7);
+        mContext.startService(intent);
+    }
+
+    @Override
     public void close() {
         Intent intent = new Intent(mContext, BluetoothPrinterService.class);
-        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 2);
+        intent.putExtra(BluetoothPrinterService.EXTRA_TYPE, 7);
         mContext.startService(intent);
     }
 }
