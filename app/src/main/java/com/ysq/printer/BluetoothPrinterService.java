@@ -190,6 +190,6 @@ public class BluetoothPrinterService extends IntentService {
      * 打印机走纸，通过调用打印两行空白文字实现
      */
     private void feedPaper() throws Exception {
-        printText("\n", false, false);
+        printText("\n\n", false, false);
     }
 }

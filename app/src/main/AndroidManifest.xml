@@ -27,12 +27,11 @@
         </activity>
 
         <service android:name=".LklPrinterService" />
-
         <service android:name=".ChinaumsPrinterService" />
-
         <service android:name=".SunmiscPrinterService" />
-
         <service android:name=".BluetoothPrinterService" />
+
+        <activity android:name=".PrintActivity"></activity>
     </application>
 
 </manifest>

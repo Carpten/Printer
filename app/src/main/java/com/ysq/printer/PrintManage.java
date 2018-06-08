@@ -11,7 +11,7 @@ package com.ysq.printer;
 public class PrintManage {
 
     private static final int COUNT = 1;
-    private static final int DELAY = 2000;
+    private static final int DELAY = 10000;
 
     private Printable mPrintable;
 
