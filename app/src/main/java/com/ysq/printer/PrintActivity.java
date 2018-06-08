@@ -13,7 +13,7 @@ public class PrintActivity extends AppCompatActivity {
     }
 
     public void print(View view) {
-        //        new PrintManage(new LklPrinter(MainActivity.this)).printDetail();
+        //        new PrintManage(new LacaraPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new SunmiscPrinter(MainActivity.this)).printDetail();
         new PrintManage(new BluetoothPrinter(

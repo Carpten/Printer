@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".LklPrinterService" />
+        <service android:name=".LacaraPrinterService" />
         <service android:name=".ChinaumsPrinterService" />
         <service android:name=".SunmiscPrinterService" />
         <service android:name=".BluetoothPrinterService" />

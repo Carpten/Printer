@@ -29,7 +29,7 @@ import java.util.concurrent.CountDownLatch;
  * version: 1.0
  * </pre>
  */
-public class LklPrinterService extends IntentService {
+public class LacaraPrinterService extends IntentService {
 
     /**
      * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
@@ -75,8 +75,8 @@ public class LklPrinterService extends IntentService {
         }
     };
 
-    public LklPrinterService() {
-        super(LklPrinterService.class.getSimpleName());
+    public LacaraPrinterService() {
+        super(LacaraPrinterService.class.getSimpleName());
     }
 
     @Override
