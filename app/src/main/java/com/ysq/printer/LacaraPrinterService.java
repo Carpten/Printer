@@ -10,6 +10,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.lkl.cloudpos.aidl.AidlDeviceService;
@@ -66,6 +68,14 @@ public class LacaraPrinterService extends IntentService {
     private AidlPrinterListener mListener = new AidlPrinterListener.Stub() {
         @Override
         public void onError(int i) {
+            if (i == 1) {
+                Toast.makeText(LacaraPrinterService.this
+                        , "打印失败，请检查打印纸是否充足", Toast.LENGTH_SHORT).show();
+            } else if (i == 4) {
+                Toast.makeText(LacaraPrinterService.this
+                        , "打印失败，请检查电量是否充足", Toast.LENGTH_SHORT).show();
+            }
+            Log.i("test", "i:" + i);
             mCountDownLatch.countDown();
         }
 
@@ -114,6 +124,7 @@ public class LacaraPrinterService extends IntentService {
      * 绑定服务
      */
     private void init() throws InterruptedException {
+        Log.i("test", "init");
         mCountDownLatch = new CountDownLatch(1);
         Intent intent = new Intent();
         intent.setAction("lkl_cloudpos_mid_service");
