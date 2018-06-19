@@ -79,6 +79,7 @@ public class SunmiscPrinter implements Printable {
     public void close() {
         Intent intent = new Intent(mContext, SunmiscPrinterService.class);
         intent.putExtra(SunmiscPrinterService.EXTRA_TYPE, 2);
+        intent.putExtra(PrintIntentService.EXTRA_MODE, 1);
         mContext.startService(intent);
     }
 }

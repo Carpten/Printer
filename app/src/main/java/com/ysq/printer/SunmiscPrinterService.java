@@ -1,12 +1,12 @@
 package com.ysq.printer;
 
-import android.app.IntentService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
 
 import woyou.aidlservice.jiuiv5.IWoyouService;
 
-public class SunmiscPrinterService extends IntentService {
+public class SunmiscPrinterService extends PrintIntentService {
 
     /**
      * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字
@@ -177,5 +177,18 @@ public class SunmiscPrinterService extends IntentService {
      */
     private void feedPaper() throws Exception {
         printText("\n\n", false, false);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.i("test", "server create");
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("test", "server destroy");
     }
 }

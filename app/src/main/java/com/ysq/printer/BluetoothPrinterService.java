@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class BluetoothPrinterService extends IntentService {
+public class BluetoothPrinterService extends PrintIntentService {
 
     /**
      * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字

@@ -31,7 +31,7 @@ import java.util.concurrent.CountDownLatch;
  * version: 1.0
  * </pre>
  */
-public class LacaraPrinterService extends IntentService {
+public class LacaraPrinterService extends PrintIntentService {
 
     /**
      * 意图类型传值键，0：启动打印机，1：写入打印机，2：断开打印机，3：打印文字

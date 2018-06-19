@@ -19,8 +19,11 @@ public class PrintManage {
         mPrintable = printable;
     }
 
-    public void printDetail() {
+    public void init() {
         mPrintable.init();
+    }
+
+    public void printDetail() {
         for (int i = 0; i < COUNT; i++) {
             mPrintable.printText("俊隆实业", true, true);
             mPrintable.printText(getSplicedText(
@@ -57,6 +60,10 @@ public class PrintManage {
             mPrintable.flushPrint();
             mPrintable.delay(DELAY);
         }
+    }
+
+
+    public void close() {
         mPrintable.close();
     }
 
