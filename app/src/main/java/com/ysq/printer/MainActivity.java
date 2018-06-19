@@ -12,11 +12,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        mPrintManage = new PrintManage(new BluetoothPrinter(
-//                MainActivity.this, "DC:0D:30:21:24:14"));
+        mPrintManage = new PrintManage(new BluetoothPrinter(
+                MainActivity.this, "DC:0D:30:21:24:14"));
         //        new PrintManage(new LacaraPrinter(MainActivity.this)).printDetail();
 //        new PrintManage(new ChinaumsPrinter(MainActivity.this)).printDetail();
-        mPrintManage = new PrintManage(new SunmiscPrinter(MainActivity.this));
+//        mPrintManage = new PrintManage(new SunmiscPrinter(MainActivity.this));
         mPrintManage.init();
     }
 

@@ -11,7 +11,7 @@ package com.ysq.printer;
 public class PrintManage {
 
     private static final int COUNT = 1;
-    private static final int DELAY = 10000;
+    private static final int DELAY = 2000;
 
     private Printable mPrintable;
 
@@ -58,7 +58,9 @@ public class PrintManage {
             mPrintable.printQrcode("http://weixin.qq.com/q/02CdanA5focHh1faGtNr1M");
             mPrintable.feedPaper();
             mPrintable.flushPrint();
-            mPrintable.delay(DELAY);
+            if (i < COUNT - 1) {
+                mPrintable.delay(DELAY);
+            }
         }
     }
 
